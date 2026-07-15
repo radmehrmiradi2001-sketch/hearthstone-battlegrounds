@@ -1,30 +1,23 @@
-# Team Info Form
+# Team: NAME
 
-Copy this file and save it in this folder with your team name. Example: `teams/phoenix.md`
+## Members
 
-## Basic Info
+| Name | Student ID | GitHub username | Responsibility |
+|---|---|---|---|
+| Member name | Student ID | Username | Engine, client, server, QA, or documentation |
 
-- Team name:
-- Branch name: `team/<team-name>`
-- Members:
-  - Member 1 — Student ID
-  - Member 2 — Student ID
-  - Member 3 — Student ID
+## Branch
 
-## Notes (Optional)
+`team/TEAM-SLUG`
 
-- Each member's domain:
-  - Member 1:
-  - Member 2:
-  - Member 3:
+## Working agreement
 
-## Important PR Links (Optional)
+- Use individual feature branches for daily work.
+- Merge into the team branch only through reviewed pull requests.
+- Keep gameplay changes covered by deterministic tests.
+- Record protocol changes in `data/mock_payloads.md`.
+- Do not commit credentials, local environments, caches, or generated build output.
 
-- (Add your PR links here)
+## Current milestone
 
-## Progress (Optional)
-
-- [ ] Initial design
-- [ ] Core implementation
-- [ ] Tests
-- [ ] Documentation
+Describe the milestone, its owner, acceptance criteria, and known risks.
