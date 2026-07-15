@@ -1,90 +1,76 @@
-# پروژه بازی hearthstone
+# Battlegrounds Simulator
 
-## مستندات
+A deterministic, four-player tavern auto-battler foundation built for reliable gameplay experiments, replayable combat, and clean client/server integration.
 
-قبل از اینکه شروع کنی، حتماً این فایل رو بخون:
+> This is an independent educational project inspired by the auto-battler genre. Existing reference artwork and design notes remain available for classroom use.
 
-**[ مستندات Frontend Playbook](./docs/frontend_playbook.md)**
+## What is implemented
 
-توی این فایل همه چیز رو نوشتم:
+- Typed domain models for players, minions, tavern tiers, and combat keywords
+- Recruit-phase commands for buying, playing, selling, freezing, refreshing, and upgrading
+- Board, hand, gold, and position validation with clear rule errors
+- Automatic triple detection and Golden minion creation
+- Seeded, deterministic combat with alternating attacks
+- Taunt targeting, Divine Shield, simultaneous damage, death events, ties, and hero damage
+- Structured combat events suitable for replay timelines or network transport
+- Runnable demonstration CLI and automated tests
 
-- معماری پروژه
-- قوانین بازی و چطوری Recruit/Combat کار می‌کنه
-- لیست مینیون‌ها و قابلیت‌هاشون
-- ساختار داده‌ها و Event Log
-- راهنمای انیمیشن و UI
-- سناریوهای تست
+The original design specification, mock payload notes, team template, and artwork are preserved in `docs/`, `data/`, `teams/`, and `bgknowhow-main/`.
 
-## شروع کار
-
-### 1. برنچ خودت رو بساز
-
-یه نکته مهم: هر کسی باید برنچ مخصوص خودش رو توی Git بسازه و همه کدزنی‌ها رو اونجا انجام بده.
+## Quick start
 
 ```bash
-# برنچ جدید با نام خودت بساز (مثال: student-name)
-git checkout main
-git pull origin main
-git checkout -b student-name
+python -m venv .venv
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+
+battlegrounds-sim --seed 42
+pytest
+ruff check .
 ```
 
-یادت باشه نام برنچ باید شامل نام یا شناسه خودت باشه تا بتونیم کارهای هر کسی رو از هم تشخیص بدیم.
+For JSON output that can feed a UI or replay viewer:
 
-نکته سیاست برنچ‌ها:
+```bash
+battlegrounds-sim --seed 42 --json
+```
 
-- هر دانشجو روی برنچ شخصی خودش کار می‌کنه (مثال: `student-name`).
-- برای تجمیع خروجی‌ها می‌تونید یک برنچ تیمی هم داشته باشید (مثال: `team/<team-name>`). Merge فقط از طریق Pull Request از برنچ‌های شخصی به برنچ تیمی انجام بشه.
-- Push مستقیم به `main` ممنوع؛ همه تغییرات باید با PR بیاد.
+## Architecture
 
-### 2. شروع به کدزنی
+```text
+battlegrounds_engine/
+  models.py       # Validated domain entities and terminology
+  recruit.py      # Recruit-phase command rules
+  combat.py       # Deterministic combat resolution and events
+  cli.py          # Runnable simulation demo
+tests/            # Recruit and combat regression tests
+data/             # Existing payload contracts and fixtures
+docs/             # Existing product and interface specifications
+```
 
-بعد از اینکه برنچ خودت رو ساختی:
+The engine deliberately contains no rendering or socket code. A Pygame, web, or network client can consume the same `PlayerState` and `CombatEvent` contracts without coupling gameplay rules to presentation.
 
-1. ساختار پروژه رو طبق معماری که توی مستندات نوشته شده بساز
-2. کدزنی رو توی برنچ خودت انجام بده
-3. تغییرات رو به صورت مرتب commit کن
-4. اگه لازم شد، تغییرات رو به برنچ اصلی push کن
+## Core terminology
 
-## چند نکته
+Names follow game-domain intent instead of UI implementation details:
 
-- قبل از شروع کدزنی، حتماً مستندات رو خوب بخون
-- هر کسی باید توی برنچ خودش کار کنه
-- کدها باید طبق معماری که توی مستندات نوشته شده باشن
-- فایل‌های موقت و اضافی رو commit نکن
-- عکس‌های مورد نیاز اکثرش در [فولدر](./bgknowhow-main/images) موجوده.
- 
+- `PlayerState` — authoritative state for one lobby participant
+- `RecruitService` — validated recruit-phase command handler
+- `CombatEngine` — deterministic battle resolver
+- `CombatEvent` — immutable replay or transport record
+- `RuleViolation` — expected invalid player command
+- `instance_id` — unique board entity; `card_id` identifies the card definition
 
-## ثبت تیم‌ها
+## Roadmap
 
-می‌خوایم اسم تیم‌ها و اعضا با شماره دانشجویی مرتب اینجا بمونه. دو راه داری:
+1. Load card definitions from versioned JSON schemas.
+2. Add Battlecry, Deathrattle, Reborn, summon queues, and hero powers.
+3. Introduce a four-player round coordinator with ghost snapshots.
+4. Connect the existing mock payload contracts to a WebSocket gateway.
+5. Build a replay viewer before adding a full interactive client.
 
-- فوری و ساده: توی جدول پایین یک ردیف اضافه کن و PR بده.
-- مرتب‌تر: از روی `teams/TEAM_TEMPLATE.md` یه فایل توی `teams/` بساز، پرش کن، بعد لینکشو توی جدول بذار.
+## Contributing
 
-یادت نره:
+Create a feature branch and submit changes through a pull request. Keep rule changes covered by deterministic tests, and never mix gameplay decisions into rendering components.
 
-- برای تیم‌تون می‌تونید یک برنچ بسازید (پیشنهادی: `team/<team-name>`). مثال: `team/phoenix`. کار روزمره هر نفر همچنان روی برنچ شخصی خودش انجام می‌شه.
-- فقط ردیف تیم خودت رو تغییر بده. به بقیه دست نزن.
-- همه‌چیز از طریق Pull Request باشه که قابل بررسی بمونه.
-
-چطور ثبت کنی:
-
-1. از روی `teams/TEAM_TEMPLATE.md` یک فایل جدید داخل `teams/` با اسم تیمت بساز (مثال: `teams/phoenix.md`).
-2. فایل رو پر کن و ذخیره کن.
-3. یک ردیف به جدول پایین اضافه کن و نام برنچ و لینک فایل تیم رو بذار.
-4. Commit کن و یک Pull Request به `main` بساز.
-
-### جدول تیم‌ها
-
-| نام تیم | برنچ تیمی | اعضا (شماره دانشجویی) | لینک فایل تیم |
-|---------|-----------|------------------------|---------------|
-| مثال | `team/example` | 401234567، 401234568 | [teams/example.md](./teams/example.md) |
-<!-- ردیف تیم خودتون رو اینجا اضافه کنید -->
-
-## لینک‌های مفید
-
-- [مستندات Frontend Playbook](./docs/frontend_playbook.md)
-- [مستندات Server-Side](./docs/server.md) - هنوز دارم کاملش می‌کنم (Socket Programming)
-- [مستندات Mock Payloads](./data/mock_payloads.md)
-
-
+The full client gameplay specification is available at [docs/frontend_playbook.md](docs/frontend_playbook.md).
